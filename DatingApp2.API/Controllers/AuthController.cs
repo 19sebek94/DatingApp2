@@ -1,4 +1,5 @@
-﻿using DatingApp2.API.Data;
+﻿using AutoMapper;
+using DatingApp2.API.Data;
 using DatingApp2.API.Dtos;
 using DatingApp2.API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,12 @@ namespace DatingApp2.API.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
             _config = config;
+            _mapper = mapper;
             _repo = repo;
         }
 
@@ -54,7 +57,7 @@ namespace DatingApp2.API.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
+                new Claim(ClaimTypes.Name, userFromRepo.Username) // do navbara imię (z tokena)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8
@@ -73,9 +76,12 @@ namespace DatingApp2.API.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor); //tworzy token
             //zawiera jwt token przesyłane do klienta
+
+            var user = _mapper.Map<UserForListDto>(userFromRepo);
             return Ok(new
             {
-                token = tokenHandler.WriteToken(token)
+                token = tokenHandler.WriteToken(token),
+                user
             });
         }
     }
