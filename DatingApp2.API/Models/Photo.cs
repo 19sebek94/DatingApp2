@@ -10,7 +10,7 @@ namespace DatingApp2.API.Models
         public DateTime DateAdded { get; set; }
         public bool IsMain { get; set; }
         public string PublicId { get; set; }
-        public User User { get; set; } // robię to po to aby migracja była poprawna (ReferentialAction.Cascade)
+        public virtual User User { get; set; } // robię to po to aby migracja była poprawna (ReferentialAction.Cascade)
         public int UserId { get; set; } // jeśli kasuję user'a to kasuję też photos
     }
 }
